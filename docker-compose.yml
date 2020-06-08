@@ -1,0 +1,14 @@
+version: "3"
+services:
+  games:
+    image: nginx
+    ports:
+      - "8001:80"
+    restart: always
+    volumes:
+      - ./:/usr/share/nginx/html
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    command: [nginx, '-g', 'daemon off;']
