@@ -43,9 +43,9 @@ function onKeyDown(e) {
   }
   //7-3 カーソルの移動範囲の制限
   if (cursorPos.x < 0) cursorPos.x += boardSize.x;
-  if (cursorPos.x >= boardSize.x) cursorPos.x -= boardSize.x
+  if (cursorPos.x >= boardSize.x) cursorPos.x -= boardSize.x;
   if (cursorPos.y < 0) cursorPos.y += boardSize.y;
-  if (cursorPos.y >= boardSize.y) cursorPos.y -= boardSize.y
+  if (cursorPos.y >= boardSize.y) cursorPos.y -= boardSize.y;
   //7-4 再描画
   draw();
 }
