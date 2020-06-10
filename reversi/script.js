@@ -224,9 +224,10 @@ function draw() {
 [w, s, a, d]:カーソル移動<br>
 [その他キー]:石を置く`;
   }
-  else
-    message += '何かキーを押してください。';//4-3 ゲーム終了時の処理
-
+  else {
+    //4-3 ゲーム終了時の処理
+    message += '何かキーを押してください。';
+  }
   //3-4 HTMLファイルへ出力
   html += '<br>' + message;
   let div = document.querySelector('div');
