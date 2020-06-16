@@ -14,7 +14,8 @@ const character = {
   player: 0, //プレイヤー
   slime: 1, // スライム
   //4-1 追加キャラクター
-  max:2 //4-2 キャラクターの数
+  boss: 2,
+  max: 3 //4-2 キャラクターの数
 };
 const phase = {
   encount: 0,
@@ -33,12 +34,17 @@ const commandNames = [
   'じゅもん',
   'にげる'
 ];
+const magicCost = 3;
 let characters = [
   new Character('ゆうしゃ', 15, 10, 3),
   new Character('スライム', 5, 0, 2,
                 '　　人<br>'
                 +'（＠ｖ＠）'),
   //5-1 追加キャラクター
+  new Character('ラスボス', 30, 0, 5,
+                '　　Ａ　Ａ<br>'
+                +'　　＠＠＠<br>'
+                +'Ψ（▼皿▼）Ψ'),
 ];
 let player;
 let enemy;
@@ -48,7 +54,7 @@ let currentCharacter;
 function init() {
   //2-1 キャラクターの初期化
   player = characters[character.player];
-  enemy = characters[character.slime]; //6-1 敵の設定
+  enemy = characters[character.boss]; //6-1 敵の設定
   player.target = enemy;
   enemy.target = player;
   player.hp = player.maxHp;
@@ -59,6 +65,8 @@ function init() {
   enemy.command = command.fight;
   player.damage = player.target.power;
   enemy.damage = enemy.target.power;
+  player.commandResult = false;
+  enemy.commandResult = false;
   //2-2 進行データの初期化
   currentPhase = phase.encount;
   currentCharacter = player;
@@ -112,9 +120,24 @@ function draw() {
       break;
     case command.spell:
       //13-2 じゅもん
+      if (currentCharacter.commandResult) { //17-1 mpが足りているかのチェック
+        html += currentCharacter.name
+          + 'は　ヒールを　となえた！<br>'
+          + currentCharacter.name
+          + 'の　きずが　かいふくした！<br>';
+      }
+      else {
+        //17-2 MPが足りない場合
+        html += 'ＭＰが　たりない！<br>';
+      }
       break;
     case command.run:
       //13-3 にげる
+      html += currentCharacter.name
+        + 'は　にげだした！<br>';
+      if(!currentCharacter.commandResult) {
+        html += 'しかし　まわりこまれてしまった！<br>';
+      }
       break;
     }
     break;
@@ -137,6 +160,10 @@ function draw() {
 function onKeyDown(e) {
   //9-1 戦闘を終了する処理
   if ( (player.hp <= 0) || (enemy.hp <= 0) ) {
+    init();
+    return;
+  }
+  if ((currentCharacter.command === command.run) && (currentCharacter.commandResult)) {
     init();
     return;
   }
@@ -174,6 +201,8 @@ function onKeyDown(e) {
       //16-1 両者のターンが終わったら
       currentCharacter = player;
       currentPhase = phase.command;
+      player.commandResult = false;
+      enemy.commandResult = false;
     }
     break;
   }
@@ -192,9 +221,20 @@ function action() {
     break;
   case command.spell:
     //14-2 じゅもん
+    if (currentCharacter.mp >= magicCost) { //18-1 MPが足りているかの判定
+      currentCharacter.hp = currentCharacter.maxHp;
+      //18-2 MPが足りた場合の処理
+      currentCharacter.mp -= magicCost;
+      currentCharacter.commandResult = true;
+    }
+    else {
+      //18-3 MPが足りなかったときの処理
+      currentCharacter.commandResult = false;
+    }
     break;
   case command.run:
     //14-3 にげる
+    currentCharacter.commandResult = (Math.random() >= 0.5);
     break;
   }
 }
